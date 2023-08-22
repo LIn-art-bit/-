@@ -1,0 +1,5 @@
+:root {
+  --primary-color:#2a2e49;
+  --active-color:#d81f06;
+  --el-menu-bg-color: var(--primary-color);
+}
