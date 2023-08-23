@@ -7,64 +7,67 @@ const routes: RouteRecordRaw[] = [
     {
       path: "/",
       // 重定向到首页
-      redirect: "/home",
-    },
-    {
-      path: "/home",
-      name: "首页",
-      component: () => import("@/views/home/index.vue"),
-      meta: {
-        isMenu: true,
-        icon: "House",
-        title: "首页"
-      }
-    },
-    {
-      path: "/people",
-      name: "人员管理",
-      component: () => import("@/views/not-found/index.vue"),
-      meta: {
-        isMenu: true,
-        icon: "User",
-        title: "人员管理"
-      }
-    },
-    {
-      path: "/product",
-      name: "产品管理",
-      component: () => import("@/views/not-found/index.vue"),
-      meta: {
-        isMenu: true,
-        icon: "Handbag",
-        title: "产品管理"
-      }
-    },
-    {
-      path: "/mutil-menu",
-      name: "多级菜单",
-      redirect: "mutil-menu/one",
-      children: [
+      component: () => import("@/views/main/index.vue"),
+      redirect: "home",
+      children:[
         {
-          path: "one",
-          name: "二级菜单1",
-          component: () => import("@/views/not-found/index.vue"),
+          path: "/home",
+          name: "首页",
+          component: () => import("@/views/main/home/index.vue"),
           meta: {
-            title: "二级菜单1"
+            isMenu: true,
+            icon: "House",
+            title: "首页"
           }
         },
         {
-          path: "two",
-          name: "二级菜单2",
-          component: () => import("@/views/not-found/index.vue"),
+          path: "/people",
+          name: "人员管理",
+          component: () => import("@/views/main/home/index.vue"),
           meta: {
-            title: "二级菜单2"
+            isMenu: true,
+            icon: "User",
+            title: "人员管理"
           }
-        }
-      ],
-      meta:{
-        isMenu: true,
-        icon: "More"
-      }
+        },
+        {
+          path: "/product",
+          name: "产品管理",
+          component: () => import("@/views/main/home/index.vue"),
+          meta: {
+            isMenu: true,
+            icon: "Handbag",
+            title: "产品管理"
+          }
+        },
+        {
+          path: "/mutil-menu",
+          name: "多级菜单",
+          redirect: "mutil-menu/one",
+          children: [
+            {
+              path: "one",
+              name: "二级菜单1",
+              component: () => import("@/views/main/home/index.vue"),
+              meta: {
+                title: "二级菜单1"
+              }
+            },
+            {
+              path: "two",
+              name: "二级菜单2",
+              component: () => import("@/views/main/home/index.vue"),
+              meta: {
+                title: "二级菜单2"
+              }
+            }
+          ],
+          meta:{
+            isMenu: true,
+            icon: "More"
+          }
+        },
+      ]
     },
     {
       path: "/login",
