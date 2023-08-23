@@ -1,58 +1,59 @@
 <template>
   <div class="common-aside">
     <el-menu
-      default-active="2"
-      :collapse="flag"
+      :default-active="route.path"
+      :collapse="isShow"
+      :router="true"
       >
-      <div class="logo" @click="flag=!flag">
+      <div class="logo" @click="clickSwitch">
         <img src="@/assets/image/logo.png" alt="">
-        <!-- <span v-show="!flag">Radmin</span> -->
       </div>
-      <el-sub-menu index="1">
-        <template #title>
-          <el-icon><location /></el-icon>
-          <span>Navigator One</span>
-        </template>
-        <el-menu-item-group>
-          <template #title><span>Group One</span></template>
-          <el-menu-item index="1-1">item one</el-menu-item>
-          <el-menu-item index="1-2">item two</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="Group Two">
-          <el-menu-item index="1-3">item three</el-menu-item>
-        </el-menu-item-group>
-      </el-sub-menu>
-      <el-menu-item index="2">
-        <el-icon><icon-menu /></el-icon>
-        <template #title>Navigator Two</template>
-      </el-menu-item>
-      <el-menu-item index="3" disabled>
-        <el-icon><document /></el-icon>
-        <template #title>Navigator Three</template>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon><setting /></el-icon>
-        <template #title>Navigator Four</template>
-      </el-menu-item>
+      <template v-for="item in routes" :key="item.name">
+        <el-menu-item v-if="item.meta.isMenu && item.children.length===0" :index="item.path">
+          <el-icon>
+            <component :is="item.meta.icon" style="width: 18px;"></component>
+          </el-icon>
+          <template #title>{{ item.name }}</template>
+        </el-menu-item>
+        <el-sub-menu v-if="item.meta.isMenu && item.children.length !== 0" :index="item.path">
+          <template #title>
+            <el-icon>
+              <component :is="item.meta.icon" style="width: 18px;"></component>
+            </el-icon>
+            <span> {{item.name}} </span>
+          </template>
+          <el-menu-item-group>
+            <template v-for="child, in item.children" :key="child.name">
+               <el-menu-item :index="`${item.path}/${child.path}`"> {{ child.name }} </el-menu-item>
+            </template>
+          </el-menu-item-group>
+        </el-sub-menu>
+      </template>
     </el-menu>
   </div>
 </template>
 
 <script lang='ts' setup>
+import { debounce } from '@/utils/tool';
 import { ref} from 'vue'
-import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
-} from '@element-plus/icons-vue'
+import { useRouter, useRoute } from 'vue-router'
 
-const flag = ref(false)
+const route = useRoute()
+
+// 控制侧边栏的展开状态
+const isShow = ref(false)
+// 按钮-防抖处理
+const clickSwitch = debounce(() => {
+  isShow.value = !isShow.value
+}, 200)
+
+// 获取所有路由的信息
+const router = useRouter()
+const routes = router.getRoutes()
 
 </script>
 
 <style lang='scss' scoped>
-
   .common-aside {
     height: 100%;
     .logo {

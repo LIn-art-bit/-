@@ -19,9 +19,7 @@
 <script lang='ts' setup>
 import CommonAside from '@/components/common-aside/index.vue'
 import CommonHeader from '@/components/common-header/index.vue'
-
 </script>
-
 <style lang='scss' scoped>
   .app {
     position: fixed;

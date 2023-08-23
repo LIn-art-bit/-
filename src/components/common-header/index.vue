@@ -3,9 +3,11 @@
     <div class="navbar">
       <div class="breadcrumb">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item>测试1</el-breadcrumb-item>
-          <el-breadcrumb-item>测试2</el-breadcrumb-item>
-          <el-breadcrumb-item>测试3</el-breadcrumb-item>
+          <template v-for="item in breadcrumbData" :key = "item.name">
+            <el-breadcrumb-item v-if="item==='首页'" :to="{ path: '/' }">{{ item }}</el-breadcrumb-item>
+            <el-breadcrumb-item v-else> {{ item }} </el-breadcrumb-item>
+          </template>
+
         </el-breadcrumb>
       </div>
       <div class="user">
@@ -13,7 +15,7 @@
           <span class="profile">
             <img src="@/assets/image/profile.jpg" alt="">
             <el-icon class="el-icon--right">
-              <arrow-down />
+              <component is="ArrowDown"></component>
             </el-icon>
           </span>
         <template #dropdown>
@@ -32,25 +34,72 @@
         :class="{ active: index === currentIndex }"
         v-for="(tag, index) in tags"
         :key="index"
-        closable
+        :closable = "tag === '首页' ? false : true"
+        @close="bindClose(index)"
+        @click="bindClick(index)"
+        :size="index === currentIndex ? 'default' : 'small'"
       >
-        {{ tag.name }}
-    </el-tag>
+        {{ tag }}
+      </el-tag>
     </div>
   </div>
 </template>
 
 <script lang='ts' setup>
-import { ref } from 'vue';
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router'
 
+// 面包屑
+const route = useRoute()
+const breadcrumbData = ref([""])
+// 监听路由变化更新面包屑
+watch(route, (newValue)=>{
+  breadcrumbData.value = ["首页"]
+  for(let item of newValue.matched) {
+    let val = item.name?.toString()
+    if(val != "首页" && val != undefined) { 
+      breadcrumbData.value.push(val)
+    }
+  }
+},{
+  immediate: true
+})
 
-const tags = ref([
-  { name: '测试3'},
-  { name: '测试4'},
-  { name: '测试5'},
-])
-const currentIndex = 2
+// tags栏
+const router = useRouter()
+const tags = ref(["首页"]);
+const currentIndex = ref(0)
+// 监听路由变化,更新tags数组
+watch(route, (newValue)=> {
+  let val = newValue.name?.toString()
+  if(val === undefined) return
+  if(!tags.value.includes(val)) {
+    tags.value.push(val)
+    currentIndex.value = tags.value.length - 1
+  } 
+  else currentIndex.value = tags.value.indexOf(val)
+},{
+  immediate: true
+})
+// 监听当前下标,跳转路由
+watch(currentIndex,(newValue)=>{
+  router.push({
+    name: tags.value[newValue]
+  })
+}, {
+  immediate:true
+})
+// 关闭tag
+const bindClose = (index: number) => {
+  tags.value.splice(index, 1)
+  if (currentIndex.value > index) currentIndex.value = currentIndex.value - 1
+  else if (currentIndex.value === index) currentIndex.value = tags.value.length - 1
+  else return
+}
+// 点击tag
+const bindClick = (index: number) => {
+  currentIndex.value = index
+}
 
 </script>
 
@@ -66,6 +115,7 @@ const currentIndex = 2
         display: flex;
         align-items: center;
         padding-left: 20px;
+        --el-color-primary: var(--active-color);
       }
       .user {
         cursor: pointer;
@@ -99,7 +149,8 @@ const currentIndex = 2
         }
         .active {
           color: #fff;
-          --el-tag-bg-color: var(--primary-color);
+          background-image: linear-gradient(-180deg, #2A2E49 0%, #454655 40%, #595C7A 100%);
+          --el-tag-bg-color: none;
           --el-tag-text-color: var(--active-color);
         }
     }
