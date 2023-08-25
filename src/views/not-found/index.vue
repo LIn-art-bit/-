@@ -1,7 +1,7 @@
 <template>
   <div class="not-found">
     <div class="info">
-      <img src="@/assets/image/logo.png" alt="">
+      <img src="@/assets/image/logo.svg" alt="">
       <div class="text">
         404......
         <div class="tip">点击<span class="backBtn" @click="bindBack">此处</span>回到首页</div>
@@ -33,33 +33,42 @@ const bindBack = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-image: url('@/assets/image/bg.jpg');
+
   .info {
     display: flex;
     align-items: center;
-    height: 200px;
-    width: 400px;
+    justify-content: center;
+    width: 600px;
+    height: 400px;
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 20px;
+
     img {
       height: 200px;
       border-radius: 100px;
       transition: all .8s ease;
     }
+
     img:hover {
       box-shadow: 10px 10px 10px var(--active-color);
     }
+
     .text {
       margin-left: 20px;
       text-align: center;
       font-size: 50px;
       font-weight: 600;
-      color: var(--primary-color);
+      color: #fff;
+
       .tip {
         font-size: 16px;
+
         .backBtn {
-        cursor: pointer;
-        color: var(--active-color);
+          cursor: pointer;
+          color: var(--active-color);
         }
       }
     }
   }
-}
-</style>
+}</style>

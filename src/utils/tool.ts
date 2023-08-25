@@ -1,18 +1,17 @@
 // 防抖函数
 export const debounce = (fn: Function, delay: number = 300) => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    return function(this: any) {
-        clearTimeout(timer as ReturnType<typeof setTimeout>);
-        timer = setTimeout(() => {
-            fn.call(this);
-        }, delay);
-    };
-};
-
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  return function (this: any) {
+    clearTimeout(timer as ReturnType<typeof setTimeout>);
+    timer = setTimeout(() => {
+      fn.call(this);
+    }, delay);
+  };
+}
 // 节流函数
 export const throttle = (fn: Function, delay: number = 300) => {
   let timer: ReturnType<typeof setTimeout> | null = null
-  return function (this:any) {
+  return function (this: any) {
     if (!timer) {
       timer = setTimeout(() => {
         fn.call(this)
@@ -20,4 +19,13 @@ export const throttle = (fn: Function, delay: number = 300) => {
       }, delay)
     }
   }
+}
+// 全屏函数
+export const toggleFullScreen = (el: HTMLElement | HTMLDivElement) => {
+  if (!document.fullscreenElement) {
+    el.requestFullscreen()
+    return true
+  }
+  document.exitFullscreen()
+  return false
 }

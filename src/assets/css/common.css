@@ -3,3 +3,7 @@
   --active-color:#d81f06;
   --el-menu-bg-color: var(--primary-color) !important;
 }
+#nprogress .bar {
+  background: var(--active-color) !important;
+  height: 3px !important;
+}

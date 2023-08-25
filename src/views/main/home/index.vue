@@ -8,8 +8,8 @@
 </script>
 
 <style lang='scss' scoped>
-  .home {
-    height: 100%;
-    background-color: #fff;
-  }
+.home {
+  height: 100%;
+  background-color: #fff;
+}
 </style>

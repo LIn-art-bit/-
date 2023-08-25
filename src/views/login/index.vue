@@ -3,44 +3,25 @@
     <div class="panel">
       <div class="panel-left">
         <div class="inner">
-          <img src="@/assets/image/logo.png" alt="">
+          <img src="@/assets/image/logo.svg" alt="">
           <div class="text">R-admin</div>
         </div>
       </div>
       <div class="panel-right">
         <div class="title">欢迎使用!</div>
-        <el-form
-          ref="loginFormRef"
-          :model="loginForm"
-          status-icon
-          :rules="rules"
-          label-width="auto"
-          hide-required-asterisk="true"
-          class="inner-login"
-        >
+        <el-form ref="loginFormRef" :model="loginForm" status-icon :rules="rules" label-width="auto"
+          hide-required-asterisk="true" class="inner-login">
           <el-form-item label="用户名:" prop="username">
-            <el-input v-model="loginForm.username" autocomplete="off"/>
+            <el-input v-model="loginForm.username" autocomplete="off" />
           </el-form-item>
           <el-form-item label="密码:" prop="password">
-            <el-input v-model="loginForm.password" type="password" autocomplete="off"/>
+            <el-input v-model="loginForm.password" type="password" autocomplete="off" />
           </el-form-item>
           <el-form-item>
-            <el-button 
-              type="primary" 
-              size="small" 
-              color="#2a2e49"
-              @click="submitForm(loginFormRef)"
-              :loading = "isloading" 
-            >
+            <el-button type="primary" size="small" color="#2a2e49" @click="submitForm(loginFormRef)" :loading="isloading">
               登录
             </el-button>
-            <el-button 
-              type="primary" 
-              size="small" 
-              color="#2a2e49"
-              @click="resetForm(loginFormRef)"
-              :disabled = "isloading"
-            >
+            <el-button type="primary" size="small" color="#2a2e49" @click="resetForm(loginFormRef)" :disabled="isloading">
               重置
             </el-button>
           </el-form-item>
@@ -54,14 +35,13 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useRouter } from 'vue-router'
-// import { debounce } from '@/utils/tool'
 
 const router = useRouter()
 
 const loginFormRef = ref<FormInstance>()
 const loginForm = reactive({
-  username:'',
-  password:''
+  username: '',
+  password: ''
 })
 // 验证规则
 const rules = reactive<FormRules<typeof loginForm>>({
@@ -104,7 +84,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 
 <style lang='scss' scoped>
 .login {
-  position:fixed;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
@@ -114,27 +94,32 @@ const resetForm = (formEl: FormInstance | undefined) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  .panel{
+
+  .panel {
     display: flex;
     align-items: center;
     width: 600px;
     height: 400px;
-    background-color: rgba(0,0,0,.5);
+    background-color: rgba(0, 0, 0, .5);
     border-radius: 20px;
+
     .panel-left {
       display: flex;
       justify-content: center;
       width: 300px;
       height: 50%;
+
       img {
         display: block;
         width: 100px;
         border-radius: 50px;
         transition: all .8s ease;
       }
+
       img:hover {
         box-shadow: 8px 8px 8px var(--active-color);
       }
+
       .text {
         margin-top: 30px;
         color: #fff;
@@ -143,6 +128,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
         text-align: center;
       }
     }
+
     .panel-right {
       width: 300px;
       height: 100%;
@@ -152,11 +138,13 @@ const resetForm = (formEl: FormInstance | undefined) => {
       align-items: center;
       justify-content: center;
       border-radius: 0 20px 20px 0;
+
       .title {
         font-size: 24px;
         font-weight: 600;
         color: var(--primary-color);
       }
+
       .inner-login {
         display: flex;
         flex-direction: column;
@@ -164,8 +152,9 @@ const resetForm = (formEl: FormInstance | undefined) => {
         justify-content: center;
         width: 300px;
         height: 200px;
+
         .el-input {
-          --el-color-primary:var(--primary-color);
+          --el-color-primary: var(--primary-color);
           width: 150px;
         }
       }
@@ -175,11 +164,10 @@ const resetForm = (formEl: FormInstance | undefined) => {
 
 // 清除chorme浏览器自动填入的样式
 :deep(input:-webkit-autofill,
-      input:-webkit-autofill:hover,
-      input:-webkit-autofill:focus,
-      input:-webkit-autofill:active) {
-        -webkit-transition-delay: 111111s;
-        -webkit-transition: color 11111s ease-out, background-color 111111s ease-out;
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active) {
+  -webkit-transition-delay: 111111s;
+  -webkit-transition: color 11111s ease-out, background-color 111111s ease-out;
 }
-
 </style>

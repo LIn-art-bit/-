@@ -1,15 +1,15 @@
 <template>
-  <div class="main">
+  <div class="main" ref="mainRef">
     <el-container class="main-container">
       <el-aside width="auto">
-        <common-aside></common-aside>
+        <common-aside />
       </el-aside>
       <el-container>
         <el-header class="main-header">
-          <common-header></common-header>
+          <common-header />
         </el-header>
         <el-main class="main-content">
-          <router-view></router-view>
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -19,6 +19,8 @@
 <script lang='ts' setup>
 import CommonAside from '@/components/common-aside/index.vue'
 import CommonHeader from '@/components/common-header/index.vue'
+
+
 </script>
 <style lang='scss' scoped>
 .main {
