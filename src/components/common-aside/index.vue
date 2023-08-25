@@ -45,7 +45,7 @@ const isShow = ref(false)
 // 按钮-防抖处理
 const clickSwitch = debounce(() => {
   isShow.value = !isShow.value
-}, 200)
+}, 300)
 
 // 获取所有路由的信息
 const router = useRouter()

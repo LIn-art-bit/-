@@ -4,7 +4,7 @@
       <div class="breadcrumb">
         <el-breadcrumb separator="/">
           <template v-for="item in breadcrumbData" :key = "item.name">
-            <el-breadcrumb-item v-if="item==='首页'" :to="{ path: '/' }">{{ item }}</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="item==='首页'" :to="{ path: '/home' }">{{ item }}</el-breadcrumb-item>
             <el-breadcrumb-item v-else> {{ item }} </el-breadcrumb-item>
           </template>
 
@@ -20,9 +20,7 @@
           </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
+            <el-dropdown-item @click="logOut">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
         </el-dropdown>
@@ -51,14 +49,15 @@ import { useRoute, useRouter } from 'vue-router'
 
 // 面包屑
 const route = useRoute()
-const breadcrumbData = ref([""])
+const breadcrumbData = ref(new Set<string>())
 // 监听路由变化更新面包屑
 watch(route, (newValue)=>{
-  breadcrumbData.value = ["首页"]
+  breadcrumbData.value.clear()
+  breadcrumbData.value.add("首页") 
   for(let item of newValue.matched) {
     let val = item.name?.toString()
     if(val != "首页" && val != undefined) { 
-      breadcrumbData.value.push(val)
+      breadcrumbData.value.add(val)
     }
   }
 },{
@@ -99,6 +98,13 @@ const bindClose = (index: number) => {
 // 点击tag
 const bindClick = (index: number) => {
   currentIndex.value = index
+}
+
+// 个人菜单
+const logOut = () => {
+  router.push({
+    path:'/login'
+  })
 }
 
 </script>
