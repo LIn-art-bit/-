@@ -1,14 +1,17 @@
 <template>
   <div class="common-header">
+    <!-- 导航栏 -->
     <div class="navbar">
+      <!-- 面包屑 -->
       <div class="breadcrumb">
-          <el-breadcrumb separator="/">
-            <template v-for="item in breadcrumbData" :key="item.name">
-              <el-breadcrumb-item v-if="item === '首页'" :to="{ path: '/home' }">{{ item }}</el-breadcrumb-item>
-              <el-breadcrumb-item v-else> {{ item }} </el-breadcrumb-item>
-            </template>
-          </el-breadcrumb>
+        <el-breadcrumb separator="/">
+          <template v-for="item in breadcrumbData" :key="item.name">
+            <el-breadcrumb-item v-if="isHome(item)" :to="{ path: '/home' }">{{ item }}</el-breadcrumb-item>
+            <el-breadcrumb-item v-else> {{ item }} </el-breadcrumb-item>
+          </template>
+        </el-breadcrumb>
       </div>
+      <!-- 工具栏 -->
       <div class="tool">
         <div class="btns">
           <el-tooltip class="box-item" effect="dark" :content="isFullScreen ? '缩小' : '全屏'" placement="top-start">
@@ -39,9 +42,10 @@
         </el-dropdown>
       </div>
     </div>
+    <!-- tag栏 -->
     <div class="tags">
-      <el-tag class="tags_item" :class="{ active: index === currentIndex }" v-for="(tag, index) in tags" :key="index"
-        :closable="tag === '首页' ? false : true" @close="bindClose(index)" @click="bindClick(index)"
+      <el-tag class="tags_item" :class="{ active: index === currentIndex }" v-for="(tag, index) in tagsData" :key="index"
+        :closable="!isHome(tag)" @close="bindClose(index)" @click="bindClick(index)"
         :size="index === currentIndex ? 'default' : 'small'">
         {{ tag }}
       </el-tag>
@@ -54,16 +58,21 @@ import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { toggleFullScreen, debounce } from '@/utils/tool'
 import { useMainStore } from '@/store'
+import { storeToRefs } from 'pinia'
+
+// 获取状态
+const mainStore = useMainStore()
+const { isAsideExpand, tagsData } = storeToRefs(mainStore)
 
 // 全屏按钮
 const isFullScreen = ref(false)
 const bindfullScrren = () => {
   isFullScreen.value = toggleFullScreen(document.body)
 }
+
 // 展开按钮
-const mainStore = useMainStore()
 const bindExpand = debounce(() => {
-  mainStore.isAsideExpand = !mainStore.isAsideExpand
+  isAsideExpand.value = !isAsideExpand.value
 }, 300)
 
 
@@ -86,33 +95,24 @@ watch(route, (newValue) => {
 
 // tags栏
 const router = useRouter()
-const tags = ref(["首页"]);
 const currentIndex = ref(0)
 // 监听路由变化,更新tags数组
 watch(route, (newValue) => {
   let val = newValue.name?.toString()
   if (val === undefined) return
-  if (!tags.value.includes(val)) {
-    tags.value.push(val)
-    currentIndex.value = tags.value.length - 1
+  if (!tagsData.value.includes(val)) {
+    tagsData.value.push(val)
+    currentIndex.value = tagsData.value.length - 1
   }
-  else currentIndex.value = tags.value.indexOf(val)
-}, {
-  immediate: true
-})
-// 监听当前下标,跳转路由
-watch(currentIndex, (newValue) => {
-  router.push({
-    name: tags.value[newValue]
-  })
+  else currentIndex.value = tagsData.value.indexOf(val)
 }, {
   immediate: true
 })
 // 关闭tag
 const bindClose = (index: number) => {
-  tags.value.splice(index, 1)
+  tagsData.value.splice(index, 1)
   if (currentIndex.value > index) currentIndex.value = currentIndex.value - 1
-  else if (currentIndex.value === index) currentIndex.value = tags.value.length - 1
+  else if (currentIndex.value === index) currentIndex.value = tagsData.value.length - 1
   else return
 }
 // 点击tag
@@ -123,12 +123,27 @@ const bindClick = (index: number) => {
 // 个人菜单
 const logOut = () => {
   // 退出全屏
-  document.exitFullscreen()
+  if (document.fullscreenElement) document.body.requestFullscreen()
+  window.localStorage.removeItem('token')
+  // 跳转到登录页
   router.push({
     path: '/login'
   })
 }
 
+// 监听当前下标,自动跳转路由
+watch(currentIndex, (newValue) => {
+  router.push({
+    name: tagsData.value[newValue]
+  })
+}, {
+  immediate: true
+})
+
+// 当前页面
+const isHome = (val: string) => {
+  return val === '首页' ? true : false
+}
 </script>
 
 <style lang='scss' scoped>

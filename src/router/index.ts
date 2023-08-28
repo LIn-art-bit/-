@@ -82,6 +82,13 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: "/demo",
+    component: () => import("@/views/demo.vue"),
+    meta: {
+      title: "测试页"
+    }
+  },
+  {
     path: "/:pathMatch(.*)*",
     component: () => import("@/views/not-found/index.vue"),
     meta: {
@@ -100,14 +107,24 @@ const options: RouterOptions = {
 const router: Router = createRouter(options)
 
 // 路由跳转开始
-router.beforeEach((to) => {
+router.beforeEach((to, from, next) => {
   // 更新网页标题
   document.title = `R-admin-${to.meta.title}`
+  // 进度条开始
   NProgress.start()
+  // 登录验证
+  if (to.path !== '/login') {
+    const token = window.localStorage.getItem('token')
+    if (!token) {
+      next({ path: '/login' })
+    }
+  }
+  next()
 })
 
 // 路由跳转结束
 router.afterEach(() => {
+  // 进度条停止
   NProgress.done()
 })
 

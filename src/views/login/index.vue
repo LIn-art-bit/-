@@ -10,7 +10,7 @@
       <div class="panel-right">
         <div class="title">欢迎使用!</div>
         <el-form ref="loginFormRef" :model="loginForm" status-icon :rules="rules" label-width="auto"
-          hide-required-asterisk="true" class="inner-login">
+          hideRequiredAsterisk class="inner-login">
           <el-form-item label="用户名:" prop="username">
             <el-input v-model="loginForm.username" autocomplete="off" />
           </el-form-item>
@@ -35,6 +35,8 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { useLoginStore } from '@/store';
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
@@ -55,21 +57,32 @@ const rules = reactive<FormRules<typeof loginForm>>({
   ]
 })
 const isloading = ref(false)
-// 提交按钮
-const submitForm = (formEl: FormInstance | undefined) => {
+
+// 登录逻辑
+const loginStore = useLoginStore()
+
+// 登录按钮
+const submitForm = (formEl: FormInstance | undefined) => {  
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
       isloading.value = true
-      // 模拟登录等待
-      setTimeout(() => {
-        router.push({
-          path: "/home"
-        })
-      }, 1000);
+      loginStore.accountLoginAction(loginForm).then(res=>{
+        if(res) {
+          ElMessage({
+            message: '登录成功！',
+            type: 'success',
+          })
+          router.push({
+            path: '/home'
+          })
+        } else {
+          isloading.value = false
+          ElMessage.error('登陆失败！请检查密码是否正确或者用户是否存在！')
+        }
+      })
     } else {
       isloading.value = false
-      console.log('error submit!')
       return false
     }
   })
