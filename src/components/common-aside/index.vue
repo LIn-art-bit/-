@@ -31,7 +31,6 @@
 
 <script lang='ts' setup>
 import { debounce } from '@/utils/tool';
-// import { ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
 

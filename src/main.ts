@@ -9,6 +9,7 @@ import 'nprogress/nprogress.css'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import '@/mock'
 import 'element-plus/dist/index.css'
+import 'default-passive-events'
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)

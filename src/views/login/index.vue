@@ -32,11 +32,11 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useLoginStore } from '@/store';
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 
 const router = useRouter()
 
@@ -92,6 +92,15 @@ const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
 }
+
+// 提示框
+onMounted(() => {
+  ElNotification({
+    title: '提示',
+    message: '账户:admin 密码:12345678',
+    duration: 3000,
+  })
+})
 
 </script>
 

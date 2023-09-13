@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
-import { IMainState, ILoginState } from './type'
+import { IMainState, ILoginState, IHomeState } from './type'
 import { accountLoginRequest } from '@/service/login'
+import { gethomeInitDataRequest, getPieChartDataRequest, getTrendChartDataRequest } from '@/service/home'
 import { IAccount } from "@/service/login/type";
 
 export const useMainStore = defineStore('mainStore', {
@@ -47,4 +48,47 @@ export const useLoginStore = defineStore('loginStore', {
     key: 'token',
     paths: ['token']
   },
+})
+
+export const useHomeStore = defineStore('homeStore', {
+  state: ():IHomeState => {
+    return {
+      initData: [],
+      pieChartData:[],
+      trendChartData:{
+        date:[],
+        value:[]
+      },
+    }
+  },
+  getters: {
+
+  },
+  actions: {
+    async getHomeInitData() {
+      try {
+        const res = await gethomeInitDataRequest()
+        this.initData = res.data
+      } catch (error){
+        console.log(error)
+      }
+    },
+    async getPieChartData() {
+      try {
+        const res = await getPieChartDataRequest()
+        this.pieChartData = res.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getTrendChartData() {
+      try {
+        const res = await getTrendChartDataRequest()
+        this.trendChartData = res.data
+        console.log(this.trendChartData);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
 })
