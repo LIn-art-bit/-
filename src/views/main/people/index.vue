@@ -183,8 +183,14 @@ const handleReset = () => {
 // 新增按钮
 const handleAdd = () => {
   title.value = "新增"
+  ruleForm.value =
+  {
+    name: "",
+    username: "",
+    role: "",
+    status: ""
+  }
   dialogVisible.value = true;
-  resetForm(ruleFormRef.value)
 }
 // 搜索按钮
 const handleSearch = () => {

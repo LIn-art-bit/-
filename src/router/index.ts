@@ -82,13 +82,6 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: "/demo",
-    component: () => import("@/views/demo.vue"),
-    meta: {
-      title: "测试页"
-    }
-  },
-  {
     path: "/:pathMatch(.*)*",
     component: () => import("@/views/not-found/index.vue"),
     meta: {
@@ -108,6 +101,8 @@ const router: Router = createRouter(options)
 
 // 路由跳转开始
 router.beforeEach((to, from, next) => {
+  console.log(from);
+  
   // 更新网页标题
   document.title = `R-admin-${to.meta.title}`
   // 进度条开始
