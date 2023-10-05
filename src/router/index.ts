@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/people",
         name: "人员管理",
-        component: () => import("@/views/main/home/index.vue"),
+        component: () => import("@/views/main/people/index.vue"),
         meta: {
           isMenu: true,
           icon: "User",
@@ -38,7 +38,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/product",
         name: "产品管理",
-        component: () => import("@/views/main/home/index.vue"),
+        component: () => import("@/views/main/product/index.vue"),
         meta: {
           isMenu: true,
           icon: "Handbag",
@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: "one",
             name: "二级菜单1",
-            component: () => import("@/views/main/home/index.vue"),
+            component: () => import("@/views/main/mutil/one/index.vue"),
             meta: {
               title: "二级菜单1"
             }
@@ -61,7 +61,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: "two",
             name: "二级菜单2",
-            component: () => import("@/views/main/home/index.vue"),
+            component: () => import("@/views/main/mutil/two/index.vue"),
             meta: {
               title: "二级菜单2"
             }

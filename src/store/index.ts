@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
-import { IMainState, ILoginState, IHomeState } from './type'
+import { IMainState, ILoginState, IHomeState, IPeopleState } from './type'
 import { accountLoginRequest } from '@/service/login'
 import { gethomeInitDataRequest, getPieChartDataRequest, getTrendChartDataRequest } from '@/service/home'
+import { getPeopleData, deletePeopleData } from "@/service/people"
 import { IAccount } from "@/service/login/type";
 
 export const useMainStore = defineStore('mainStore', {
@@ -32,7 +33,7 @@ export const useLoginStore = defineStore('loginStore', {
 
   },
   actions: {
-    async accountLoginAction(payload: IAccount):Promise<boolean> {
+    async accountLoginAction(payload: IAccount): Promise<boolean> {
       try {
         const res = await accountLoginRequest(payload)
         // 拿到token
@@ -51,13 +52,13 @@ export const useLoginStore = defineStore('loginStore', {
 })
 
 export const useHomeStore = defineStore('homeStore', {
-  state: ():IHomeState => {
+  state: (): IHomeState => {
     return {
       initData: [],
-      pieChartData:[],
-      trendChartData:{
-        date:[],
-        value:[]
+      pieChartData: [],
+      trendChartData: {
+        date: [],
+        value: []
       },
     }
   },
@@ -69,7 +70,7 @@ export const useHomeStore = defineStore('homeStore', {
       try {
         const res = await gethomeInitDataRequest()
         this.initData = res.data
-      } catch (error){
+      } catch (error) {
         console.log(error)
       }
     },
@@ -90,5 +91,36 @@ export const useHomeStore = defineStore('homeStore', {
         console.log(error)
       }
     }
+  }
+})
+
+export const usePeopleStore = defineStore('peopleStore', {
+  state: (): IPeopleState => {
+    return {
+      peopleList: [],
+      total: 0
+    }
+  },
+  getters: {
+
+  },
+  actions: {
+    async getPeopleDataAction(pageSize: number, currentPage: number, id: string, username: string, name: string, status: string, role: string) {
+      try {
+        const res = await getPeopleData({ pageSize, currentPage, id, username, name, status, role })
+        this.peopleList = res.data
+        this.total = res.total
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async deletePeopleDataAction(id: string) {
+      try {
+        const res = await deletePeopleData({ id })
+        console.log(res);
+      } catch (error) {
+        console.log(error)
+      }
+    },
   }
 })

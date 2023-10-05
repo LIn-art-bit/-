@@ -20,3 +20,15 @@ export interface IHomeState {
     value: number[];
   },
 }
+interface people {
+  id: number;
+  username: string;
+  name: string;
+  role: number;
+  status: number;
+  createTime: string;
+}
+export interface IPeopleState {
+  peopleList: Array<people>
+  total: number
+}
