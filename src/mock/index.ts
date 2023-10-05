@@ -1,39 +1,37 @@
 import Mock from 'mockjs'
 
-// 延时时间
-Mock.setup({
-  timeout: '300-600'
-})
 
-// 登录验证
-Mock.mock(RegExp('mock/test/login'), 'post', (options) => {
-  const data = JSON.parse(options.body)
-  if (data.username === 'admin' && data.password === '12345678') {
-    return Mock.mock({
-      "code": 200,
-      "token": "@guid()",
-      "isOk": true,
-      "msg": "登陆成功",
-      "statusCode": "200"
-    });
-  } else if (data.username === 'admin' && data.password != '12345678') {
-    return Mock.mock({
-      "code": 400,
-      "token": null,
-      "isOk": false,
-      "msg": "密码错误",
-      "statusCode": null
-    });
-  } else if (data.username != 'admin') {
-    return Mock.mock({
-      'code': 500,
-      "token": null,
-      "isOk": false,
-      "msg": "账号不存在",
-      "statusCode": null
-    });
+function getCurrentDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1; // 月份从0开始，所以要加1
+  const day = today.getDate();
+
+  // 使用模板字符串将年、月、日拼接成指定格式
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}
+
+function generateRandomDate() {
+  const startDate = new Date('2020-01-01');
+  const endDate = new Date(); // 当前日期
+  const randomTime = startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime());
+  const randomDate = new Date(randomTime);
+  return randomDate.toISOString().split('T')[0]; // 格式化为 "YYYY-MM-DD"
+}
+
+function parseQueryString(url: any) {
+  const query = url.split('?')[1];
+  if (!query) {
+    return {};
   }
-})
+  return query.split('&').reduce((params: any, param: any) => {
+    const [key, value] = param.split('=');
+    params[key] = decodeURIComponent(value);
+    return params;
+  }, {});
+}
 
 // 首页数据
 const Random = Mock.Random;
@@ -89,16 +87,6 @@ const trendChartData = Mock.mock({
   'value': [Random.integer(100, 300), Random.integer(100, 400), Random.integer(100, 500), Random.integer(100, 600), Random.integer(100, 600), Random.integer(300, 1000), Random.integer(300, 1000)],
 });
 
-// 人员数据
-
-function generateRandomDate() {
-  const startDate = new Date('2020-01-01');
-  const endDate = new Date(); // 当前日期
-  const randomTime = startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime());
-  const randomDate = new Date(randomTime);
-  return randomDate.toISOString().split('T')[0]; // 格式化为 "YYYY-MM-DD"
-}
-
 // 生成用户数据列表
 const userData = Mock.mock({
   'list|500': [{
@@ -110,6 +98,41 @@ const userData = Mock.mock({
     'createTime': () => generateRandomDate()
   }],
 });
+
+// 延时时间
+Mock.setup({
+  timeout: '300-600'
+})
+
+// 登录验证
+Mock.mock(RegExp('mock/test/login'), 'post', (options) => {
+  const data = JSON.parse(options.body)
+  if (data.username === 'admin' && data.password === '12345678') {
+    return Mock.mock({
+      "code": 200,
+      "token": "@guid()",
+      "isOk": true,
+      "msg": "登陆成功",
+      "statusCode": "200"
+    });
+  } else if (data.username === 'admin' && data.password != '12345678') {
+    return Mock.mock({
+      "code": 400,
+      "token": null,
+      "isOk": false,
+      "msg": "密码错误",
+      "statusCode": null
+    });
+  } else if (data.username != 'admin') {
+    return Mock.mock({
+      'code': 500,
+      "token": null,
+      "isOk": false,
+      "msg": "账号不存在",
+      "statusCode": null
+    });
+  }
+})
 
 Mock.mock('mock/test/home/initData', 'get', () => {
   return {
@@ -140,18 +163,6 @@ Mock.mock('mock/test/home/trendChartData', 'get', () => {
     "statusCode": "200"
   }
 })
-
-function parseQueryString(url: any) {
-  const query = url.split('?')[1];
-  if (!query) {
-    return {};
-  }
-  return query.split('&').reduce((params: any, param: any) => {
-    const [key, value] = param.split('=');
-    params[key] = decodeURIComponent(value);
-    return params;
-  }, {});
-}
 
 // 模拟搜索用户接口
 Mock.mock(RegExp('mock/test/people/searchUserList'), 'get', (options) => {
@@ -200,32 +211,58 @@ Mock.mock(RegExp('mock/test/people/searchUserList'), 'get', (options) => {
 
 // 删除人员数据
 Mock.mock(RegExp('mock/test/people/deleteUser'), 'post', (options) => {
-  const params = parseQueryString(options.url);
-
+  const params = JSON.parse(options.body);
   const deleteIndex = userData.list.findIndex((item: any) => {
     return item.id === Number(params.id)
   })
   if (deleteIndex != -1) {
     userData.list.splice(deleteIndex, 1)
-  }
-  return {
-    code: 200,
-    success: true,
-    message: '用户删除成功'
+    return {
+      code: 200,
+      success: true,
+      message: '用户删除成功'
+    }
   }
 })
 
 //修改人员数据
 Mock.mock(RegExp('mock/test/people/editUser'), 'post', (options) => {
   const params = JSON.parse(options.body)
+  params.role = Number(params.role)
+  params.status = Number(params.status)
+
   for (let i = 0; i < userData.list.length; i++) {
-    if (userData.list.userList[i].id === params.id) {
-      userData.list.userList[i] = params
+    if (userData.list[i].id === params.id) {
+      for (let k in params) {
+        userData.list[i][k] = params[k]
+      }
     }
   }
   return {
     code: 200,
     success: true,
     message: '用户修改成功'
+  }
+})
+
+// 添加人员数据
+Mock.mock(RegExp('mock/test/people/addUser'), 'post', (options) => {
+  const params = JSON.parse(options.body)
+  console.log(params);
+
+  userData.list.push(
+    Mock.mock({
+      id: userData.list[userData.list.length - 1].id + 1,
+      username: params.username,
+      name: params.name,
+      role: Number(params.role),
+      status: Number(params.status),
+      createTime: getCurrentDate()
+    })
+  )
+  return {
+    code: 200,
+    success: true,
+    message: '用户添加成功'
   }
 })

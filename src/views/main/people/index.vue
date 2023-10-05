@@ -34,7 +34,7 @@
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table v-loading="loading" element-loading-text="拼命加载中" :data="peopleList" style="width: 100%">
+      <el-table v-loading="loading" element-loading-text="拼命加载中" :data="peopleList" stripe style="width: 100%">
         <el-table-column fixed prop="id" label="序号" width="200" />
         <el-table-column prop="username" label="用户名" width="250" />
         <el-table-column prop="name" label="姓名" width="250" />
@@ -56,7 +56,7 @@
         @current-change="handleSearch" popper-class="select" />
     </div>
     <!-- 弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="title" width="400px" :before-close="handleClose">
+    <el-dialog v-model="dialogVisible" :title="title" width="400px" :before-close="handleClose" draggable>
       <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="80px">
         <el-form-item label="用户名" style="width: 280px;" prop="username" required>
           <el-input v-model="ruleForm.username" placeholder="请输入用户名" clearable />
@@ -94,8 +94,10 @@ import { usePeopleStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { IRuleForm } from "./type";
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const peopleStore = usePeopleStore()
+const curId = ref("")
 
 // 弹窗相关
 const dialogVisible = ref(false)
@@ -134,7 +136,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
+      if (title.value === "新增") {
+        peopleStore.addPeopleDataAction(ruleForm.value).finally(() => {
+          dialogVisible.value = false
+          handleSearch()
+        })
+      }
+      else if (title.value === "编辑") {
+        peopleStore.editPeopleDataAction({ id: curId.value, ...ruleForm.value }).finally(() => {
+          dialogVisible.value = false
+          handleSearch()
+        })
+      }
     } else {
       console.log('error submit!', fields)
     }
@@ -187,11 +200,38 @@ const loading = ref(true)
 const { peopleList, total } = storeToRefs(peopleStore)
 // 删除按钮
 const handleDelete = (row: any) => {
-  peopleStore.deletePeopleDataAction(row.id)
+  ElMessageBox.confirm(
+    `是否删除${row.name}?`,
+    '提示',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      cancelButtonClass: "cancelButton",
+      confirmButtonClass: "confirmButton",
+      draggable: true
+    }
+  )
+    .then(() => {
+      peopleStore.deletePeopleDataAction(row.id).finally(() => {
+        handleSearch()
+      })
+      ElMessage({
+        type: 'success',
+        message: '删除成功！',
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消删除',
+      })
+    })
 }
 // 编辑按钮
 const handleEdit = (row: any) => {
-  const { name, username, role, status } = row
+  const { id, name, username, role, status } = row
+  curId.value = id
   ruleForm.value = {
     name,
     username,
@@ -285,11 +325,35 @@ onMounted(() => {
 }
 </style>
 
-<!-- 修改分页器下拉选择器样式 -->
+<!-- 修改部分样式 -->
 <style>
 .select {
   .el-select-dropdown__item.selected {
     color: var(--active-color);
   }
+}
+
+.cancelButton {
+  background-color: var(--active-color);
+  border: 0;
+  color: #fff;
+}
+
+.cancelButton:hover {
+  background-color: rgb(228, 98, 81);
+  color: #fff;
+}
+
+.confirmButton {
+  background-color: var(--primary-color) !important;
+  border: 0;
+}
+
+.confirmButton:hover {
+  background-color: rgb(106, 109, 128) !important;
+}
+
+.el-message-box__headerbtn:hover i {
+  color: var(--active-color) !important;
 }
 </style>

@@ -1,5 +1,5 @@
 import testRequest from '@/service'
-import { IQueryPeopleData } from './type'
+import { IQueryPeopleData, IPeopleData, IEditPeopleData } from './type'
 
 export function getPeopleData(params: IQueryPeopleData) {
   return testRequest.get({
@@ -8,16 +8,22 @@ export function getPeopleData(params: IQueryPeopleData) {
   })
 }
 
-export function editPeopleData(params: IQueryPeopleData) {
+export function editPeopleData(data: IEditPeopleData) {
   return testRequest.post({
     url: "/people/editUser",
-    params
+    data,
   })
 }
 
-export function deletePeopleData(params: {id: string}) {
+export function deletePeopleData(data: { id: string }) {
   return testRequest.post({
     url: "/people/deleteUser",
-    params
+    data
+  })
+}
+export function addPeopleData(data: IPeopleData) {
+  return testRequest.post({
+    url: "/people/addUser",
+    data
   })
 }

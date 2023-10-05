@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { IMainState, ILoginState, IHomeState, IPeopleState } from './type'
 import { accountLoginRequest } from '@/service/login'
 import { gethomeInitDataRequest, getPieChartDataRequest, getTrendChartDataRequest } from '@/service/home'
-import { getPeopleData, deletePeopleData } from "@/service/people"
+import { getPeopleData, deletePeopleData, addPeopleData, editPeopleData } from "@/service/people"
 import { IAccount } from "@/service/login/type";
 
 export const useMainStore = defineStore('mainStore', {
@@ -117,6 +117,26 @@ export const usePeopleStore = defineStore('peopleStore', {
     async deletePeopleDataAction(id: string) {
       try {
         const res = await deletePeopleData({ id })
+        console.log(res);
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async addPeopleDataAction(data: any) {
+      const { username, name, status, role } = data
+      try {
+        const res = await addPeopleData({ username, name, status, role })
+        console.log(res);
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async editPeopleDataAction(data: any) {
+      console.log(data);
+      
+      const { id, username, name, status, role } = data
+      try {
+        const res = await editPeopleData({id, username, name, status, role })
         console.log(res);
       } catch (error) {
         console.log(error)
