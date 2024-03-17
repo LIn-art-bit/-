@@ -11,8 +11,8 @@
         <div class="title">欢迎使用!</div>
         <el-form ref="loginFormRef" :model="loginForm" status-icon :rules="rules" label-width="auto"
           hideRequiredAsterisk class="inner-login">
-          <el-form-item label="用户名:" prop="username">
-            <el-input v-model="loginForm.username" autocomplete="off" />
+          <el-form-item label="用户名:" prop="userName">
+            <el-input v-model="loginForm.userName" autocomplete="off" />
           </el-form-item>
           <el-form-item label="密码:" prop="password">
             <el-input v-model="loginForm.password" type="password" autocomplete="off" />
@@ -42,12 +42,12 @@ const router = useRouter()
 
 const loginFormRef = ref<FormInstance>()
 const loginForm = reactive({
-  username: '',
+  userName: '',
   password: ''
 })
 // 验证规则
 const rules = reactive<FormRules<typeof loginForm>>({
-  username: [
+  userName: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
     { min: 3, max: 5, message: '用户名长度应为3-5', trigger: 'blur' }
   ],

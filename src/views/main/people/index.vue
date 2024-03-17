@@ -3,88 +3,47 @@
     <!-- 搜索栏 -->
     <div class="search">
       <el-form :inline="true" :model="searchForm">
-        <el-form-item label="序号">
-          <el-input v-model.trim="searchForm.id" placeholder="请输入序号" clearable />
+        <el-form-item label="关键字">
+          <el-input v-model.trim="searchForm.key" placeholder="请输入关键字" clearable />
         </el-form-item>
-        <el-form-item label="用户名">
-          <el-input v-model.trim="searchForm.username" placeholder="请输入用户名" clearable />
+        <el-form-item label="时间">
+          <el-date-picker
+              @change="handleTimeChange"
+              v-model="searchForm.date"
+              type="daterange"
+              range-separator="To"
+              start-placeholder="Start date"
+              end-placeholder="End date"
+            />
         </el-form-item>
-        <el-form-item label="姓名">
-          <el-input v-model.trim="searchForm.name" placeholder="请输入姓名" clearable />
+        <el-form-item label="语言">
+            <el-tag v-for="item in language" :key="item" type="primary" @click="selectLanguage(item)">{{ item }}</el-tag>
         </el-form-item>
-        <el-form-item label="角色">
-          <el-select v-model="searchForm.role" placeholder="请选择角色" popper-class="select" clearable>
-            <el-option label="主管" value="0" />
-            <el-option label="员工" value="1" />
-            <el-option label="服务员" value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" popper-class="select" clearable>
-            <el-option label="异常" value="0" />
-            <el-option label="正常" value="1" />
-          </el-select>
+        <el-form-item label="分类">
+            <el-tag v-for="item in category" :key="item" type="primary" @click="selectCategory(item)">{{ item }}</el-tag>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch" color="#2a2e49">搜索</el-button>
           <el-button type="primary" @click="handleReset" color="#2a2e49">重置</el-button>
-          <el-button type="primary" @click="handleAdd" color="#2a2e49">新增</el-button>
         </el-form-item>
       </el-form>
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table v-loading="loading" element-loading-text="拼命加载中" :data="peopleList" stripe style="width: 100%">
-        <el-table-column fixed prop="id" label="序号" width="200" />
-        <el-table-column prop="username" label="用户名" width="250" />
-        <el-table-column prop="name" label="姓名" width="250" />
-        <el-table-column prop="role" label="角色" :formatter="roleFormatter" width="250" />
-        <el-table-column prop="status" label="状态" :formatter="statusFormatter" width="250" />
-        <el-table-column prop="createTime" label="创建时间" width="250" />
-        <el-table-column fixed="right" label="操作" width="200">
-          <template v-slot="scope">
-            <el-button type="danger" size="small" @click="handleDelete(scope.row)" color="#d81f06">删除</el-button>
-            <el-button type="default" size="small" @click="handleEdit(scope.row)" color="#2a2e49">编辑</el-button>
-          </template>
-        </el-table-column>
+      <el-table v-loading="loading" element-loading-text="拼命加载中" :data="newsList" stripe style="width: 100%">
+        <el-table-column type="index" width="50" label="序号" />
+        <el-table-column prop="title" label="标题" width="250" />
+        <el-table-column prop="abstractInfo" label="概述" width="250" />
+        <el-table-column prop="languageId" label="语言" :formatter="roleFormatter" width="250" />
+        <el-table-column prop="pubTime" label="发布时间" width="250" />
       </el-table>
     </div>
     <!-- 分页器 -->
     <div class="pagination">
-      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[15, 20, 25, 30]"
-        layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
+      <el-pagination v-model:current-page="page" v-model:page-size="size" :page-sizes="[15, 20, 25, 30]"
+        layout="total, sizes, prev, pager, next, jumper" :total="Number(total)" @size-change="handleSizeChange"
         @current-change="handleSearch" popper-class="select" />
     </div>
-    <!-- 弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="title" width="400px" :before-close="handleClose" draggable>
-      <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="80px">
-        <el-form-item label="用户名" style="width: 280px;" prop="username" required>
-          <el-input v-model="ruleForm.username" placeholder="请输入用户名" clearable />
-        </el-form-item>
-        <el-form-item label="姓名" style="width: 280px;" prop="name" required>
-          <el-input v-model="ruleForm.name" placeholder="请输入姓名" clearable />
-        </el-form-item>
-        <el-form-item label="角色" prop="role" required>
-          <el-select v-model="ruleForm.role" placeholder="请选择角色" popper-class="select" clearable>
-            <el-option label="主管" value="0" />
-            <el-option label="员工" value="1" />
-            <el-option label="服务员" value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态" prop="status" required>
-          <el-select v-model="ruleForm.status" placeholder="请选择状态" popper-class="select" clearable>
-            <el-option label="异常" value="0" />
-            <el-option label="正常" value="1" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button color="#2a2e49" @click="submitForm(ruleFormRef)">
-            提交
-          </el-button>
-          <el-button color="#d81f06" @click="resetForm(ruleFormRef)">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </div>
 </template>
 
@@ -92,110 +51,50 @@
 import { ref, reactive, onMounted } from "vue"
 import { usePeopleStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { IRuleForm } from "./type";
-import type { FormInstance, FormRules } from 'element-plus'
-import { ElMessage, ElMessageBox } from 'element-plus'
+// import type { FormInstance,} from 'element-plus'
 
 const peopleStore = usePeopleStore()
-const curId = ref("")
 
-// 弹窗相关
-const dialogVisible = ref(false)
-const title = ref("新增");
-const handleClose = () => {
-  dialogVisible.value = false
+type FromEl = {
+  key: string
+  category: string
+  languageName: string
+  endDate: any,
+  sinceDate: any,
+  date: any
 }
-
-// 表单验证相关
-const ruleFormRef = ref<FormInstance>()
-const ruleForm = ref<IRuleForm>({
-  name: "",
-  username: "",
-  role: "",
-  status: ""
-})
-
-// 验证规则
-const rules = reactive<FormRules<IRuleForm>>({
-  name: [
-    { required: true, message: '请输入姓名', trigger: 'blur' },
-  ],
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-  ],
-  role: [
-    { required: true, message: '请选择角色', trigger: 'blur' },
-  ],
-  status: [
-    { required: true, message: '请选择状态', trigger: 'blur' },
-  ]
-})
-
-// 提交按钮
-const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate((valid, fields) => {
-    if (valid) {
-      if (title.value === "新增") {
-        peopleStore.addPeopleDataAction(ruleForm.value).finally(() => {
-          dialogVisible.value = false
-          handleSearch()
-        })
-      }
-      else if (title.value === "编辑") {
-        peopleStore.editPeopleDataAction({ id: curId.value, ...ruleForm.value }).finally(() => {
-          dialogVisible.value = false
-          handleSearch()
-        })
-      }
-    } else {
-      console.log('error submit!', fields)
-    }
-  })
-}
-
-// 重置按钮
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.resetFields()
-}
-
 // 搜索栏相关
-const searchForm = ref({
-  id: "",
-  name: "",
-  role: "",
-  status: "",
-  username: ""
+const searchForm = ref<FromEl>({
+  key: "",
+  category: "",
+  languageName: "",
+  endDate: "",
+  sinceDate: "",
+  date: ""
 })
 // 重置按钮
 const handleReset = () => {
   searchForm.value = {
-    id: "",
-    name: "",
-    role: "",
-    status: "",
-    username: ""
+    key: "",
+    endDate: "",
+    sinceDate: "",
+    category: "",
+    languageName: "",
+    date: []
   }
-  currentPage.value = 1
+  page.value = 1
   handleSearch()
 }
-// 新增按钮
-const handleAdd = () => {
-  title.value = "新增"
-  ruleForm.value =
-  {
-    name: "",
-    username: "",
-    role: "",
-    status: ""
-  }
-  dialogVisible.value = true;
+const handleTimeChange = (options) => {
+  searchForm.value.sinceDate = new Date(options[0]).getTime()
+  searchForm.value.endDate = new Date(options[1]).getTime()
+  console.log(searchForm.value)
 }
 // 搜索按钮
 const handleSearch = () => {
   loading.value = true
-  peopleStore.getPeopleDataAction(pageSize.value, currentPage.value, searchForm.value.id, searchForm.value.username, searchForm.value.name, searchForm.value.status, searchForm.value.role)
+  peopleStore.getfilterListACtion(searchForm.value.key)
+  peopleStore.getNewListAction(size.value, page.value, searchForm.value.key, searchForm.value.endDate, searchForm.value.sinceDate, searchForm.value.category, searchForm.value.languageName)
     .finally(() => {
       loading.value = false
     })
@@ -203,72 +102,33 @@ const handleSearch = () => {
 
 // 表格相关
 const loading = ref(true)
-const { peopleList, total } = storeToRefs(peopleStore)
-// 删除按钮
-const handleDelete = (row: any) => {
-  ElMessageBox.confirm(
-    `是否删除${row.name}?`,
-    '提示',
-    {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning',
-      cancelButtonClass: "cancelButton",
-      confirmButtonClass: "confirmButton",
-      draggable: true
-    }
-  )
-    .then(() => {
-      peopleStore.deletePeopleDataAction(row.id).finally(() => {
-        handleSearch()
-      })
-      ElMessage({
-        type: 'success',
-        message: '删除成功！',
-      })
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消删除',
-      })
-    })
-}
-// 编辑按钮
-const handleEdit = (row: any) => {
-  const { id, name, username, role, status } = row
-  curId.value = id
-  ruleForm.value = {
-    name,
-    username,
-    role: role.toString(),
-    status: status.toString(),
-  }
-  title.value = "编辑"
-  dialogVisible.value = true;
-}
-const statusFormatter = (row: any) => {
-  if (row.status === 1) return "正常"
-  else return "异常"
-}
+const { newsList, total, category, language } = storeToRefs(peopleStore)
 const roleFormatter = (row: any) => {
-  if (row.role === 0) return "主管"
-  else if (row.role === 1) return "员工"
-  else if (row.role === 2) return "服务员"
+  if (row.languageId === 1880) return "菲律宾语言"
+  else if (row.languageId=== 1866) return "英语"
 }
-
 // 分页器相关
-const currentPage = ref(1)
-const pageSize = ref(15)
+const page = ref(1)
+const size = ref(15)
 const handleSizeChange = () => {
-  currentPage.value = 1
+  page.value = 1
   handleSearch()
 }
-
 
 onMounted(() => {
   handleSearch()
 })
+// 选择标签
+const selectLanguage = (item:string) => {
+  searchForm.value.languageName = item
+  handleSearch()
+  console.log(item)
+}
+const selectCategory = (item:string) => {
+  searchForm.value.category = item
+  handleSearch()
+
+}
 </script>
 
 <style lang='scss' scoped>

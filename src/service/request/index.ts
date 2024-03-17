@@ -6,18 +6,18 @@ class Request {
 
   constructor(config: AxiosRequestConfig) {
     this.instance = axios.create(config)
-    // 请求拦截器
-    this.instance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
-      // 逻辑
-      console.log('全局请求拦截器')
-      return res
-    }, (err: any) => err)
-    // 响应拦截器
-    this.instance.interceptors.response.use((res: AxiosResponse) => {
-      // 逻辑
-      console.log('全局响应拦截器')
-      return res
-    }, (err: any) => err)
+    // // 请求拦截器
+    // this.instance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
+    //   // 逻辑
+    //   console.log('全局请求拦截器')
+    //   return res
+    // }, (err: any) => err)
+    // // 响应拦截器
+    // this.instance.interceptors.response.use((res: AxiosResponse) => {
+    //   // 逻辑
+    //   console.log('全局响应拦截器')
+    //   return res
+    // }, (err: any) => err)
   }
 
   request<T = any>(config: AxiosRequestConfig): Promise<T> {

@@ -1,5 +1,5 @@
 export interface IAccount {
-  username: string
+  userName: string
   password: string
 }
 export interface ILoginResult {

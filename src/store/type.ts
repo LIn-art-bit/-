@@ -29,6 +29,7 @@ interface people {
   createTime: string;
 }
 export interface IPeopleState {
-  peopleList: Array<people>
+  newsList: any,
+  // peopleList: Array<people>
   total: number
 }

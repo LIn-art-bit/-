@@ -1,10 +1,16 @@
 import testRequest from '@/service'
 import { IQueryPeopleData, IPeopleData, IEditPeopleData } from './type'
 
-export function getPeopleData(params: IQueryPeopleData) {
-  return testRequest.get({
-    url: "/people/searchUserList",
-    params
+export function getNewList(data: any) {
+  return testRequest.post({
+    url: "/news/list",
+    data
+  })
+}
+export function getfilterList(data: any) {
+  return testRequest.post({
+    url: "/news/filters",
+    data
   })
 }
 

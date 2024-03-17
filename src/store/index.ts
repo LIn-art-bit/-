@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { IMainState, ILoginState, IHomeState, IPeopleState } from './type'
 import { accountLoginRequest } from '@/service/login'
 import { gethomeInitDataRequest, getPieChartDataRequest, getTrendChartDataRequest } from '@/service/home'
-import { getPeopleData, deletePeopleData, addPeopleData, editPeopleData } from "@/service/people"
+import { getNewList, getfilterList, deletePeopleData, addPeopleData, editPeopleData } from "@/service/people"
 import { IAccount } from "@/service/login/type";
 
 export const useMainStore = defineStore('mainStore', {
@@ -36,12 +36,14 @@ export const useLoginStore = defineStore('loginStore', {
     async accountLoginAction(payload: IAccount): Promise<boolean> {
       try {
         const res = await accountLoginRequest(payload)
+        return true
         // 拿到token
-        this.token = res.token
-        return res.isOk
+        // this.token = res.token
+        // return res
       } catch (error) {
-        console.log(error)
         return false
+        // console.log(error)
+        // return false
       }
     }
   },
@@ -95,24 +97,31 @@ export const useHomeStore = defineStore('homeStore', {
 })
 
 export const usePeopleStore = defineStore('peopleStore', {
-  state: (): IPeopleState => {
+  state: (): any=> {
     return {
-      peopleList: [],
-      total: 0
+      newsList: [],
+      total: 0,
+      language: [],
+      category: []
     }
   },
   getters: {
 
   },
   actions: {
-    async getPeopleDataAction(pageSize: number, currentPage: number, id: string, username: string, name: string, status: string, role: string) {
+    async getNewListAction(size: number, page: number, key: string, endDate: any, sinceDate: any, category: string, languageName: string) {
       try {
-        const res = await getPeopleData({ pageSize, currentPage, id, username, name, status, role })
-        this.peopleList = res.data
+        const res = await getNewList({ size, page, key, endDate, sinceDate, category, languageName })
+        this.newsList = res.hotels
         this.total = res.total
       } catch (error) {
         console.log(error)
       }
+    },
+    async getfilterListACtion(key:string) {
+      const res = await getfilterList({key})
+      this.language = res.language
+      this.category = res.category
     },
     async deletePeopleDataAction(id: string) {
       try {

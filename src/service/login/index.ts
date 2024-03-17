@@ -3,7 +3,7 @@ import testRequest from '@/service'
 
 export function accountLoginRequest(account: IAccount) {
   return testRequest.post<ILoginResult>({
-    url: '/login',
+    url: '/user/login',
     data: account
   })
 }
